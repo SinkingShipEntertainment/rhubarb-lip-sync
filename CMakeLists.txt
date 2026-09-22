@@ -7,10 +7,19 @@ project(${appName})
 # Build and install main executable
 add_subdirectory(rhubarb)
 
-# Build and install extras
-add_subdirectory("extras/AdobeAfterEffects")
-add_subdirectory("extras/MagixVegas")
-add_subdirectory("extras/EsotericSoftwareSpine")
+##############################################################
+# REZ
+# The extras are not built here.
+#   * extras/EsotericSoftwareSpine needs a JDK, which this build
+#     environment deliberately does not carry.
+#   * The After Effects and Magix Vegas extras are Windows-only
+#     authoring-tool scripts and are dead weight in a Linux rez
+#     package.
+# Only the `rhubarb` CLI is packaged; sse_maya_lipsync drives it.
+##############################################################
+# add_subdirectory("extras/AdobeAfterEffects")
+# add_subdirectory("extras/MagixVegas")
+# add_subdirectory("extras/EsotericSoftwareSpine")
 
 # Install misc. files
 install(

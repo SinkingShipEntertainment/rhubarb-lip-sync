@@ -54,7 +54,16 @@ set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 # Define libraries
 
 # ... Boost
-cmake_policy(SET CMP0167 OLD)  # Use the legacy Boost CMake integration
+##############################################################
+# REZ
+# CMP0167 (FindBoost removal) only exists in CMake 3.30+, and
+# setting an unknown policy is a hard error. The rez `cmake`
+# package is 3.29.1, which still uses the legacy Boost module
+# natively - so guard it rather than pinning a newer cmake.
+##############################################################
+if(POLICY CMP0167)
+	cmake_policy(SET CMP0167 OLD)  # Use the legacy Boost CMake integration
+endif()
 find_package(Boost 1.54 REQUIRED)
 include_directories(SYSTEM ${Boost_INCLUDE_DIRS})
 link_libraries(Boost::headers) # Just about every project needs Boost, but just the headers
@@ -585,13 +594,28 @@ function(copy sourceGlob relativeTargetDirectory)
 	endforeach()
 endfunction()
 
-copy_and_install("lib/pocketsphinx-rev13216/model/en-us/*" "res/sphinx")
-copy_and_install("lib/cmusphinx-en-us-5.2/*" "res/sphinx/acoustic-model")
+##############################################################
+# REZ
+# Upstream installs the executable to the install prefix root and
+# its sphinx data to <prefix>/res. Both move under bin/ so the
+# payload matches the house rez convention of {root}/bin.
+#
+# IMPORTANT: rhubarb resolves res/sphinx RELATIVE TO THE
+# EXECUTABLE at runtime. res/ must stay directly beside the
+# binary or pocketSphinx fails at recognition time with an error
+# that does not mention the missing model data. Move one, move
+# both.
+#
+# The test resources are not installed - they are only useful to
+# the runTests target, which is not part of the payload.
+##############################################################
+copy_and_install("lib/pocketsphinx-rev13216/model/en-us/*" "bin/res/sphinx")
+copy_and_install("lib/cmusphinx-en-us-5.2/*" "bin/res/sphinx/acoustic-model")
 
-copy_and_install("tests/resources/*" "tests/resources")
+copy("tests/resources/*" "tests/resources")
 
 install(
 	TARGETS rhubarb
 	RUNTIME
-	DESTINATION .
+	DESTINATION bin
 )
