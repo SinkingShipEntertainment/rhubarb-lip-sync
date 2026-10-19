@@ -1,7 +1,7 @@
 name = "rhubarb"
 
-# NOTE: version = <maya_release>.sse.<sse_patch>
-version = "1.14.0.sse.1.0.0"
+# NOTE: version = <release>.sse.<sse_patch>
+version = "1.14.0.sse.1.0.1"
 
 description = \
     """
@@ -27,7 +27,7 @@ variants = [
 ]
 
 build_command = "rez python {root}/rez_build.py"
-uuid = "repository.maya"
+uuid = "repository.rhubarb"
 
 
 def commands():
@@ -52,4 +52,4 @@ def commands():
     # the binary elsewhere on its own - it will fail at recognition time with an
     # error that does not mention the missing data.
     env.RHUBARB_EXECUTABLE = installation_root + "/rhubarb"
-    env.PATH.append("{root}")
+    env.PATH.append(installation_root)
